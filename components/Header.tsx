@@ -105,49 +105,64 @@ export function Header({ onToggleSidebar }: HeaderProps) {
           <span className="text-[10px] text-muted-foreground underline ml-0.5">Switch</span>
         </button>
 
-        {/* Notifications */}
-        <div className="relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              setShowNotifs(!showNotifs);
-              setNotifCount(0);
-            }}
-            className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
-            aria-label="Notifications"
-          >
-            <Bell size={17} />
-            {notifCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-orange text-[10px] font-bold text-white">
-                {notifCount}
-              </span>
-            )}
-          </Button>
+        {/* Notifications (Requirement 11: Flagged ON only in Registered Mode) */}
+        {isOwner && (
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setShowNotifs(!showNotifs);
+                setNotifCount(0);
+              }}
+              className="relative h-9 w-9 text-muted-foreground hover:text-foreground"
+              aria-label="Notifications"
+            >
+              <Bell size={17} />
+              {notifCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-orange text-[10px] font-bold text-white">
+                  {notifCount}
+                </span>
+              )}
+            </Button>
 
-          {showNotifs && (
-            <div className="absolute right-0 mt-2 w-72 sm:w-80 rounded-xl border border-border bg-card p-3 shadow-xl z-50 text-xs animate-fade-in">
-              <div className="flex items-center justify-between border-b border-border pb-2 mb-2 font-semibold">
-                <span>Intelligence Alerts</span>
-                <span className="text-[10px] text-muted-foreground">Recent</span>
+            {showNotifs && (
+              <div className="absolute right-0 mt-2 w-72 sm:w-80 rounded-xl border border-border bg-card p-3 shadow-xl z-50 text-xs animate-fade-in">
+                <div className="flex items-center justify-between border-b border-border pb-2 mb-2 font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Store size={13} className="text-gold-400" />
+                    <span>Store Telemetry Alerts</span>
+                  </span>
+                  <span className="text-[10px] text-muted-foreground font-mono">Live Feed</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                    <div className="font-semibold text-emerald-400 flex items-center justify-between">
+                      <span>Daily Revenue Settlement</span>
+                      <span className="font-mono text-[10px] text-foreground">₹18,450</span>
+                    </div>
+                    <div className="text-muted-foreground text-[11px] mt-0.5">+14% above projected micro-market benchmark.</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                    <div className="font-semibold text-foreground flex items-center justify-between">
+                      <span>New Customer Review</span>
+                      <span className="font-mono text-[10px] text-gold-400">5.0 ★</span>
+                    </div>
+                    <div className="text-muted-foreground text-[11px] mt-0.5">&quot;Best filter coffee & ambiance in the area!&quot; — Neha S.</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                    <div className="font-semibold text-foreground">Peak Footfall Surge</div>
+                    <div className="text-muted-foreground text-[11px] mt-0.5">Surge of 180 visitors/hr detected around 7:00 PM near entry.</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
+                    <div className="font-semibold text-amber-400">Inventory Telemetry</div>
+                    <div className="text-muted-foreground text-[11px] mt-0.5">Dairy & signature roast stock at 22% threshold. Restock recommended.</div>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                  <div className="font-semibold text-foreground">C-Scheme Evening Footfall Surge</div>
-                  <div className="text-muted-foreground text-[11px] mt-0.5">+18% footfall increase on weekends near Ashok Marg.</div>
-                </div>
-                <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                  <div className="font-semibold text-foreground">New Commercial Space</div>
-                  <div className="text-muted-foreground text-[11px] mt-0.5">Prime 650 sq ft corner space listed in Jaipur.</div>
-                </div>
-                <div className="p-2 rounded-lg bg-muted/40 border border-border/50">
-                  <div className="font-semibold text-foreground">Franchise Expansion</div>
-                  <div className="text-muted-foreground text-[11px] mt-0.5">Tea Post opened 3 new outlets in Rajasthan corridors.</div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* Theme Toggle */}
         <ThemeToggle />
