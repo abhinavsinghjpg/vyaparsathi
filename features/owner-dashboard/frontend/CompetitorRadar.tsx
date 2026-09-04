@@ -1,5 +1,5 @@
 import { Crosshair, MapPin } from 'lucide-react';
-import type { StoreTelemetry } from '@/database';
+import type { StoreTelemetry } from '@/types/schema';
 
 export function CompetitorRadar({ telemetry }: { telemetry: StoreTelemetry }) {
   return (

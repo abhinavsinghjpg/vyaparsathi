@@ -3,7 +3,7 @@ import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CheckCircle2, Building, Mail, Phone, MapPin, Wallet } from 'lucide-react';
-import type { Franchise } from '@/database';
+import type { Franchise } from '@/types/schema';
 import { franchisesService } from './franchises.service';
 import { formatCurrency } from '@/components/utils';
 

@@ -4,7 +4,7 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Select } from '@/components/Select';
 import { Slider } from '@/components/Slider';
-import { db } from '@/database/m_index';
+import { mapExplorerDb } from '@/features/map-explorer/backend/mapExplorer.db';
 import { geminiAdvisorService } from './geminiAdvisor.service';
 import type { AdvisorAnalysisInput } from './aiAdvisor.service';
 
@@ -38,7 +38,7 @@ interface AdvisorFormProps {
 }
 
 export function AdvisorForm({ onSubmit, isLoading }: AdvisorFormProps) {
-  const locations = db.getLocations();
+  const locations = mapExplorerDb.getLocations();
 
   const [locationInput, setLocationInput] = useState('');
   const [shopType, setShopType] = useState('cafe');
@@ -235,17 +235,28 @@ export function AdvisorForm({ onSubmit, isLoading }: AdvisorFormProps) {
 
       {/* 5. Google Gemini AI Engine / Key Configuration */}
       <div className="rounded-xl border border-border/80 bg-muted/20 p-3.5 space-y-2.5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Sparkles size={14} className="text-gold-400" />
-            <span className="text-xs font-bold text-foreground">Google Gemini Profitability Engine</span>
+            <span className="text-xs font-bold text-foreground">AI Profitability & Feasibility Engine</span>
+            {geminiApiKey.trim() ? (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                Gemini 1.5 Flash Active
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-mono font-bold">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400"></span>
+                Actuarial Retail Model Active
+              </span>
+            )}
           </div>
           <button
             type="button"
             onClick={() => setShowKeyInput(!showKeyInput)}
             className="text-[11px] font-mono text-gold-400 hover:underline flex items-center gap-1"
           >
-            <Key size={11} /> {geminiApiKey ? 'Key Configured' : 'Add Gemini Key (Optional)'}
+            <Key size={11} /> {geminiApiKey ? 'Change Gemini Key' : 'Add Gemini Key (Optional)'}
           </button>
         </div>
 
@@ -265,7 +276,7 @@ export function AdvisorForm({ onSubmit, isLoading }: AdvisorFormProps) {
         )}
 
         <p className="text-[11px] text-muted-foreground leading-relaxed">
-          Computes break-even orders/day, monthly net profit, and tells you whether opening this store is profitable or high-risk.
+          Computes break-even orders/day, monthly net profit, and evaluates whether opening this store is financially profitable or high-risk. All results are saved directly to your offline vault.
         </p>
       </div>
 

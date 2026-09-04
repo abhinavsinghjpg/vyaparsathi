@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { StoreDashboardData } from '@/database/r_users';
+import type { StoreDashboardData } from '../backend/ownerDashboard.db';
 import { Footprints, Clock, Calendar, CalendarDays, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface FootfallTrendsProps {

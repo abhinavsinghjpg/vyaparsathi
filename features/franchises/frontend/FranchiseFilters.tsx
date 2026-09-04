@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react';
+import { Search, RotateCw } from 'lucide-react';
 import { Input } from '@/components/Input';
 import { cn } from '@/components/utils';
 
@@ -18,6 +18,8 @@ interface FranchiseFiltersProps {
   onCategoryChange: (cat: string) => void;
   search: string;
   onSearchChange: (search: string) => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 export function FranchiseFilters({
@@ -25,18 +27,35 @@ export function FranchiseFilters({
   onCategoryChange,
   search,
   onSearchChange,
+  onRefresh,
+  isRefreshing,
 }: FranchiseFiltersProps) {
   return (
     <div className="space-y-3">
-      {/* Search Input */}
-      <div className="max-w-md">
-        <Input
-          type="text"
-          placeholder="Search franchise brand, category..."
-          value={search}
-          onChange={e => onSearchChange(e.target.value)}
-          leftIcon={<Search size={15} />}
-        />
+      {/* Search Input & Refresh Button */}
+      <div className="flex items-center gap-3 max-w-xl">
+        <div className="flex-1">
+          <Input
+            type="text"
+            placeholder="Search franchise brand, category..."
+            value={search}
+            onChange={e => onSearchChange(e.target.value)}
+            leftIcon={<Search size={15} />}
+          />
+        </div>
+
+        {onRefresh && (
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-border/80 bg-card hover:bg-muted/80 text-xs font-mono font-bold text-foreground shadow-sm transition-all hover:border-gold-500/50 cursor-pointer select-none shrink-0"
+            title="Refresh franchise demand pipeline and shuffle listings"
+          >
+            <RotateCw size={13} className={cn('text-gold-400', isRefreshing && 'animate-spin')} />
+            <span>Live Market Refresh</span>
+          </button>
+        )}
       </div>
 
       {/* Category Filter Pills */}

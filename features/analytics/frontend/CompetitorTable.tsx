@@ -59,13 +59,13 @@ export function CompetitorTable({ cityFilter }: { cityFilter?: string }) {
               <tr key={c.id} className="hover:bg-muted/30 transition-colors">
                 <td className="py-3 font-bold text-foreground">{c.name}</td>
                 <td className="py-3 text-muted-foreground">{c.category}</td>
-                <td className="py-3 text-muted-foreground">{c.area}, {c.city}</td>
+                <td className="py-3 text-muted-foreground">{c.area || c.locality || 'Commercial Corridor'}, {c.city}</td>
                 <td className="py-3">
                   <Badge
                     variant={
-                      c.priceLevel === 'Premium'
+                      c.priceLevel === 'Premium' || c.priceLevel === '₹₹₹' || c.priceLevel === '₹₹₹₹'
                         ? 'purple'
-                        : c.priceLevel === 'Mid'
+                        : c.priceLevel === 'Mid' || c.priceLevel === '₹₹'
                         ? 'blue'
                         : 'green'
                     }
@@ -74,8 +74,10 @@ export function CompetitorTable({ cityFilter }: { cityFilter?: string }) {
                     {c.priceLevel}
                   </Badge>
                 </td>
-                <td className="py-3 font-mono font-semibold text-foreground">₹{c.avgTicket}</td>
-                <td className="py-3 font-mono text-muted-foreground">{c.dailyCustomers} visits</td>
+                <td className="py-3 font-mono font-semibold text-foreground">
+                  ₹{c.avgTicket ?? Math.round(c.estimatedMonthlyRevenue / ((c.dailyCustomers ?? c.avgDailyCustomers ?? 100) * 30))}
+                </td>
+                <td className="py-3 font-mono text-muted-foreground">{c.dailyCustomers ?? c.avgDailyCustomers ?? 180} visits</td>
                 <td className="py-3 text-right">
                   <span className="inline-flex items-center gap-1 font-mono font-bold text-gold-400">
                     <Star size={11} className="fill-gold-400" /> {c.rating}

@@ -1,4 +1,5 @@
-import { db, type CommercialProperty } from '@/database';
+import { propertiesDb } from '../backend/properties.db';
+import type { CommercialProperty } from '@/types/schema';
 
 export interface TourBookingInput {
   propertyId: string;
@@ -10,8 +11,18 @@ export interface TourBookingInput {
 
 export const propertiesService = {
   async getProperties(filter?: { city?: string; type?: string; maxRent?: number }): Promise<CommercialProperty[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return db.getProperties(filter);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    let list = propertiesDb.getProperties();
+    if (filter?.city && filter.city.toLowerCase() !== 'all') {
+      list = list.filter(p => p.city.toLowerCase().includes(filter.city!.toLowerCase()));
+    }
+    if (filter?.type && filter.type.toLowerCase() !== 'all') {
+      list = list.filter(p => p.type.toLowerCase() === filter.type!.toLowerCase());
+    }
+    if (filter?.maxRent) {
+      list = list.filter(p => p.monthlyRent <= filter.maxRent!);
+    }
+    return list;
   },
 
   async bookTour(input: TourBookingInput): Promise<{ success: boolean; message: string }> {

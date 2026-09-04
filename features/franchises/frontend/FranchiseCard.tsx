@@ -1,5 +1,5 @@
 import { Store, Clock, Award, MapPin, ExternalLink, ShieldCheck } from 'lucide-react';
-import type { Franchise } from '@/database';
+import type { Franchise } from '@/types/schema';
 import { formatCurrency } from '@/components/utils';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
@@ -44,7 +44,7 @@ export function FranchiseCard({
 
           <div className="text-right">
             <span className="text-sm font-bold font-mono text-foreground">
-              {franchise.outlets.toLocaleString('en-IN')}+
+              {(franchise.outlets ?? franchise.outletsPanIndia ?? 0).toLocaleString('en-IN')}+
             </span>
             <div className="text-[10px] text-muted-foreground uppercase font-mono">Outlets</div>
           </div>
@@ -61,13 +61,13 @@ export function FranchiseCard({
           <div>
             <div className="text-[10px] text-muted-foreground font-mono uppercase">Investment</div>
             <div className="font-bold font-mono text-blue-400 mt-0.5">
-              {formatCurrency(franchise.investment)}
+              {formatCurrency(franchise.investment ?? franchise.minInvestment ?? 0)}
             </div>
           </div>
           <div>
             <div className="text-[10px] text-muted-foreground font-mono uppercase">Franchise Fee</div>
             <div className="font-bold font-mono text-purple-400 mt-0.5">
-              {franchise.franchiseFee === 0 ? 'Free' : formatCurrency(franchise.franchiseFee)}
+              {(franchise.franchiseFee ?? 0) === 0 ? 'Free' : formatCurrency(franchise.franchiseFee ?? 0)}
             </div>
           </div>
           <div>

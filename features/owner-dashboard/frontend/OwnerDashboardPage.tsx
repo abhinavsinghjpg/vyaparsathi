@@ -10,8 +10,8 @@ import { useAuth } from '@/system/auth/frontend/AuthContext';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { MapPin, Store, CheckCircle2, AlertCircle, Edit3, ShieldAlert, Sparkles } from 'lucide-react';
-import type { StoreTelemetry } from '@/database/m_schema';
-import type { CustomerReview } from '@/database/r_users';
+import type { StoreTelemetry } from '@/types/schema';
+import type { CustomerReview } from '../backend/ownerDashboard.db';
 
 export function OwnerDashboardPage() {
   const { user, registeredUser } = useAuth();

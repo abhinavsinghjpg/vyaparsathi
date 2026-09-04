@@ -1,5 +1,5 @@
 import { Wallet, ShieldCheck, AlertCircle } from 'lucide-react';
-import type { StoreTelemetry } from '@/database';
+import type { StoreTelemetry } from '@/types/schema';
 import { formatCurrency } from '@/components/utils';
 
 export function RevenueMatrix({ telemetry }: { telemetry: StoreTelemetry }) {

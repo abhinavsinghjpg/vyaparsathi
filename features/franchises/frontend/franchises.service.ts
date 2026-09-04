@@ -1,4 +1,5 @@
-import { db, type Franchise } from '@/database';
+import { franchisesDb } from '../backend/franchises.db';
+import type { Franchise } from '@/types/schema';
 
 export interface FranchiseInquiryInput {
   franchiseId: string;
@@ -12,8 +13,8 @@ export interface FranchiseInquiryInput {
 
 export const franchisesService = {
   async getFranchises(filter?: { category?: string; maxBudget?: number; search?: string }): Promise<Franchise[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return db.getFranchises(filter);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    return franchisesDb.getFranchises(filter);
   },
 
   async submitInquiry(input: FranchiseInquiryInput): Promise<{ success: boolean; message: string }> {

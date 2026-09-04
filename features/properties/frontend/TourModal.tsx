@@ -3,7 +3,7 @@ import { Modal } from '@/components/Modal';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { CheckCircle2, Calendar, Phone, User } from 'lucide-react';
-import type { CommercialProperty } from '@/database';
+import type { CommercialProperty } from '@/types/schema';
 import { propertiesService } from './properties.service';
 
 interface TourModalProps {

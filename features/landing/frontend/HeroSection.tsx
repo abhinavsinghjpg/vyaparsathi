@@ -1,10 +1,60 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ParticleSphere } from './ParticleSphere';
 import { Button } from '@/components/Button';
 import { ArrowRight, Compass, Sparkles } from 'lucide-react';
 
+const HOMEPAGE_CLUSTERS = [
+  {
+    clusterName: 'Koramangala 5th Block, Bengaluru',
+    opportunityIndex: '9.2 / 10',
+    footfall: '14.8k',
+    footfallDetail: 'Peak student & tech professional walk-ins',
+  },
+  {
+    clusterName: 'C-Scheme (Subhash Marg), Jaipur',
+    opportunityIndex: '8.9 / 10',
+    footfall: '11.4k',
+    footfallDetail: 'High discretionary spend & evening surge',
+  },
+  {
+    clusterName: 'Connaught Place Inner Circle, Delhi',
+    opportunityIndex: '9.6 / 10',
+    footfall: '24.5k',
+    footfallDetail: 'High transit interchange footfall density',
+  },
+  {
+    clusterName: 'Bandra West (Linking Road), Mumbai',
+    opportunityIndex: '9.4 / 10',
+    footfall: '21.2k',
+    footfallDetail: 'Premium fashion & culinary retail corridor',
+  },
+  {
+    clusterName: 'FC Road Promenade, Pune',
+    opportunityIndex: '8.8 / 10',
+    footfall: '13.6k',
+    footfallDetail: 'Campus student density & weekend retail',
+  },
+  {
+    clusterName: 'Banjara Hills Road No. 12, Hyderabad',
+    opportunityIndex: '9.1 / 10',
+    footfall: '12.8k',
+    footfallDetail: 'Affluent luxury retail & fine dining demand',
+  },
+  {
+    clusterName: 'T. Nagar (Pondy Bazaar), Chennai',
+    opportunityIndex: '9.3 / 10',
+    footfall: '27.4k',
+    footfallDetail: 'Heavy regional retail & festival shopping density',
+  },
+];
+
 export function HeroSection() {
   const navigate = useNavigate();
+  const [cluster] = useState(() => {
+    const randIdx = Math.floor(Math.random() * HOMEPAGE_CLUSTERS.length);
+    return HOMEPAGE_CLUSTERS[randIdx];
+  });
 
   return (
     <div className="relative overflow-hidden pt-6 pb-16 lg:pb-24 border-b border-border/80">
@@ -95,8 +145,8 @@ export function HeroSection() {
               <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                 Opportunity Index
               </p>
-              <h3 className="text-xl font-bold font-mono text-gold-400 mt-0.5">8.9 / 10</h3>
-              <p className="text-xs text-foreground/80 mt-1">Koramangala Cafe Cluster</p>
+              <h3 className="text-xl font-bold font-mono text-gold-400 mt-0.5">{cluster.opportunityIndex}</h3>
+              <p className="text-xs text-foreground/80 mt-1 font-semibold">{cluster.clusterName}</p>
             </div>
 
             {/* Bottom Metric Overlay */}
@@ -104,8 +154,8 @@ export function HeroSection() {
               <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
                 Est. Daily Footfall
               </p>
-              <h3 className="text-xl font-bold font-mono text-emerald-400 mt-0.5">14.2k</h3>
-              <p className="text-xs text-foreground/80 mt-1">Balanced weekday + weekend demand</p>
+              <h3 className="text-xl font-bold font-mono text-emerald-400 mt-0.5">{cluster.footfall}</h3>
+              <p className="text-xs text-foreground/80 mt-1">{cluster.footfallDetail}</p>
             </div>
           </div>
         </div>

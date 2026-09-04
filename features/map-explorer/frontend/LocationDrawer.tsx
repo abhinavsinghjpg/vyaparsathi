@@ -15,7 +15,7 @@ export function LocationDrawer({ item, onClose }: LocationDrawerProps) {
   if (!item) return null;
 
   return (
-    <div className="absolute top-4 right-4 z-20 w-80 sm:w-96 rounded-2xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-md animate-fade-in space-y-4">
+    <div className="absolute top-16 right-4 sm:top-18 sm:right-4 z-[2500] w-80 sm:w-96 rounded-2xl border border-border bg-card/95 p-5 shadow-2xl backdrop-blur-md animate-fade-in space-y-4">
       <div className="flex items-start justify-between gap-3 pb-2 border-b border-border/70">
         <div>
           <div className="flex items-center gap-2">

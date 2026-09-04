@@ -1,5 +1,5 @@
 import { DollarSign, Footprints, Percent, Wallet } from 'lucide-react';
-import type { StoreDashboardData } from '@/database/r_users';
+import type { StoreDashboardData } from '../backend/ownerDashboard.db';
 import { formatCurrency } from '@/components/utils';
 
 export function StoreKPICards({ data }: { data: StoreDashboardData }) {

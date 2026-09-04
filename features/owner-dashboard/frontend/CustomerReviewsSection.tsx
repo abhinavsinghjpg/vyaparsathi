@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Star, MessageSquare, Sparkles, Plus, CheckCircle2 } from 'lucide-react';
-import type { StoreDashboardData, CustomerReview } from '@/database/r_users';
+import type { StoreDashboardData, CustomerReview } from '../backend/ownerDashboard.db';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 

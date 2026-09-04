@@ -10,8 +10,12 @@ export function MapExplorerPage() {
   const [heatmapEnabled, setHeatmapEnabled] = useState(false);
   const [selectedPOI, setSelectedPOI] = useState<MapPOIItem | null>(null);
 
-  useEffect(() => {
+  const loadPOIs = () => {
     mapExplorerService.getPOIs(activeCategory).then(setPois);
+  };
+
+  useEffect(() => {
+    loadPOIs();
   }, [activeCategory]);
 
   return (
@@ -40,6 +44,7 @@ export function MapExplorerPage() {
           selectedPOI={selectedPOI}
           onSelectPOI={setSelectedPOI}
           heatmapEnabled={heatmapEnabled}
+          onRefreshPOIs={loadPOIs}
         />
 
         <LocationDrawer item={selectedPOI} onClose={() => setSelectedPOI(null)} />

@@ -7,6 +7,7 @@ import { BreakdownCards } from './BreakdownCards';
 import { ProsConsCard } from './ProsConsCard';
 import { CompetitorsList } from './CompetitorsList';
 import { ProfitabilityCard } from './ProfitabilityCard';
+import { GovSchemeCard } from './GovSchemeCard';
 import { Button } from '@/components/Button';
 import { Badge } from '@/components/Badge';
 import { aiAdvisorService, type AdvisorAnalysisInput, type AdvisorAnalysisResult } from './aiAdvisor.service';
@@ -185,6 +186,13 @@ export function AIAdvisorPage() {
               googleMapsUrl={result.googleMapsUrl}
             />
           )}
+
+          {/* Official Government MSME Scheme & Subsidy Advisor */}
+          <GovSchemeCard
+            shopType={result.shopType}
+            location={result.location}
+            budget={result.budget}
+          />
 
           {/* Metric Breakdown Cards */}
           <BreakdownCards result={result} />

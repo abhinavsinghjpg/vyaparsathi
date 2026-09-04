@@ -3,7 +3,7 @@ import { FranchiseCard } from './FranchiseCard';
 import { FranchiseFilters } from './FranchiseFilters';
 import { FranchiseModal } from './FranchiseModal';
 import { franchisesService } from './franchises.service';
-import type { Franchise } from '@/database';
+import type { Franchise } from '@/types/schema';
 
 export function FranchisesPage() {
   const [franchises, setFranchises] = useState<Franchise[]>([]);
@@ -11,11 +11,35 @@ export function FranchisesPage() {
   const [search, setSearch] = useState('');
   const [selectedFranchise, setSelectedFranchise] = useState<Franchise | null>(null);
 
-  useEffect(() => {
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchFranchises = (shuffle = false) => {
     franchisesService
       .getFranchises({ category, search })
-      .then(setFranchises);
+      .then(data => {
+        if (shuffle && data.length > 2) {
+          // Shuffle slightly to simulate live market momentum while preserving custom user franchises at top
+          const custom = data.filter(f => f.id.startsWith('user-biz-'));
+          const rest = data.filter(f => !f.id.startsWith('user-biz-'));
+          const rotated = [...rest.slice(1), rest[0]];
+          setFranchises([...custom, ...rotated]);
+        } else {
+          setFranchises(data);
+        }
+      });
+  };
+
+  useEffect(() => {
+    fetchFranchises(false);
   }, [category, search]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      fetchFranchises(true);
+      setIsRefreshing(false);
+    }, 450);
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 animate-fade-in">
@@ -33,6 +57,8 @@ export function FranchisesPage() {
         onCategoryChange={setCategory}
         search={search}
         onSearchChange={setSearch}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">

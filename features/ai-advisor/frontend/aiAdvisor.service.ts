@@ -1,4 +1,4 @@
-import { db } from '@/database/m_index';
+import { aiAdvisorDb, AI_ADVISOR_FLAGS } from '../backend/aiAdvisor.db';
 import { googleMapsService, type CatchmentScanResult } from '@/features/map-explorer/frontend/googleMaps.service';
 import { geminiAdvisorService, type BusinessFinancialProjection } from './geminiAdvisor.service';
 
@@ -82,6 +82,24 @@ export const aiAdvisorService = {
       };
     }
 
+    // Persist actual live scan in feature backend database
+    aiAdvisorDb.saveActualScan({
+      query: locQuery,
+      location: catchment.location,
+      coordinates: catchment.coordinates,
+      pedestrianFootfallScore: catchment.pedestrianFootfallScore,
+      footfallDensity: catchment.footfallDensity,
+      estimatedDailyTraffic: catchment.estimatedDailyTraffic,
+      transitHubsCount: catchment.transitHubsCount,
+      commercialAnchorsCount: catchment.commercialAnchorsCount,
+      competitorsCount: catchment.competitorsCount,
+      competitorBrands: catchment.competitorBrands,
+      rentPerSqft: catchment.rentPerSqft,
+      googleMapsUrl: catchment.googleMapsUrl,
+      scannedAt: new Date().toISOString(),
+      isActualData: true,
+    });
+
     // 2. Run Rigorous Profitability & Unit Economics Evaluation using Google Gemini / Actuarial Engine
     const financials = await geminiAdvisorService.evaluateProfitability(
       locQuery,
@@ -112,7 +130,7 @@ export const aiAdvisorService = {
     const saturation = catchment.competitorsCount > 12 ? 'High' : catchment.competitorsCount >= 5 ? 'Medium' : 'Low';
     const localityTitle = geocodedAddress.split(',')[0].trim();
 
-    return {
+    const result: AdvisorAnalysisResult = {
       location: localityTitle,
       fullAddress: geocodedAddress,
       coordinates: { lat, lon: lng },
@@ -146,5 +164,13 @@ export const aiAdvisorService = {
       dataSource: `${financials.engineUsed} + Google Maps Geocoding`,
       financials,
     };
+
+    try {
+      localStorage.setItem('vyapar_last_advisor_result', JSON.stringify(result));
+    } catch (e) {
+      console.warn('[AI Advisor] Failed to cache analysis result:', e);
+    }
+
+    return result;
   },
 };

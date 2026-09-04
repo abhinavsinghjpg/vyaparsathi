@@ -4,7 +4,7 @@ import {
   getStoreDashboardData,
   saveStoreDashboardData,
   DEMO_ABHINAV,
-} from '@/database/r_users';
+} from '../backend/ownerDashboard.db';
 
 export const ownerDashboardService = {
   getDashboardData(user?: RegisteredUser | null): StoreDashboardData {

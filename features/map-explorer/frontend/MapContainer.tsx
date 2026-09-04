@@ -3,7 +3,7 @@ import L from 'leaflet';
 import { Search, X, Loader2, MapPin, Globe, Navigation } from 'lucide-react';
 import { osmClientService } from './osm.service';
 import type { MapPOIItem } from './mapExplorer.service';
-import { actualDataStore } from '../../../database';
+import { mapExplorerDb } from '../backend/mapExplorer.db';
 
 interface MapContainerProps {
   pois: MapPOIItem[];
@@ -80,11 +80,20 @@ const POPULAR_CORRIDORS = [
   { name: 'C-Scheme', city: 'Jaipur', lat: 26.9080, lng: 75.8010 },
 ];
 
+interface MapContainerProps {
+  pois: MapPOIItem[];
+  selectedPOI: MapPOIItem | null;
+  onSelectPOI: (poi: MapPOIItem) => void;
+  heatmapEnabled: boolean;
+  onRefreshPOIs?: () => void;
+}
+
 export function MapContainer({
   pois,
   selectedPOI,
   onSelectPOI,
   heatmapEnabled,
+  onRefreshPOIs,
 }: MapContainerProps) {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -101,7 +110,29 @@ export function MapContainer({
   const [isSearching, setIsSearching] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [activeLocationLabel, setActiveLocationLabel] = useState<string | null>(null);
+  const [isHarvesting, setIsHarvesting] = useState(false);
+  const [harvestSuccess, setHarvestSuccess] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const handleHarvestClick = () => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    setIsHarvesting(true);
+    const center = map.getCenter();
+    const resolvedCity = activeLocationLabel || 'Local Catchment';
+    setTimeout(() => {
+      try {
+        mapExplorerDb.harvestArea(resolvedCity, resolvedCity, center.lat, center.lng, 35);
+        setHarvestSuccess(true);
+        if (onRefreshPOIs) onRefreshPOIs();
+        setTimeout(() => setHarvestSuccess(false), 2500);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsHarvesting(false);
+      }
+    }, 600);
+  };
 
   // Close search dropdown on click outside or Escape
   useEffect(() => {
@@ -214,9 +245,49 @@ export function MapContainer({
       });
 
       const marker = L.marker([poi.lat, poi.lng], { icon: customIcon });
+      
+      const popupHtml = `
+        <div style="font-family: inherit; min-width: 180px;">
+          <div style="font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em; color: #c59b27; margin-bottom: 2px;">
+            ${poi.category} • ${poi.city}
+          </div>
+          <div style="font-size: 13px; font-weight: bold; color: inherit; margin-bottom: 6px;">
+            ${poi.name}
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px; margin-bottom: 8px; padding: 6px; background: rgba(148,163,184,0.12); border-radius: 8px;">
+            <div>
+              <span style="color: #888; font-size: 9px; display: block; text-transform: uppercase;">Footfall</span>
+              <strong style="color: #3b82f6;">${poi.footfallDensity}</strong>
+            </div>
+            <div>
+              <span style="color: #888; font-size: 9px; display: block; text-transform: uppercase;">Est. Rent</span>
+              <strong>₹${poi.avgRentSqft}/sqft</strong>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px;">
+            <span style="color: #c59b27; font-weight: bold;">Score: ${poi.opportunityScore}/10</span>
+            <span style="font-size: 10px; color: #94a3b8;">Inspected in Drawer ↗</span>
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupHtml, {
+        className: 'vyapar-map-popup',
+        autoPan: true,
+        autoPanPaddingTopLeft: L.point(40, 140),
+        autoPanPaddingBottomRight: L.point(40, 40),
+        offset: L.point(0, -38),
+      });
+
+      marker.bindTooltip(`<b>${poi.name}</b><br/><span style="font-size:11px;color:#888;">${poi.category} • ${poi.city}</span>`, {
+        direction: 'top',
+        offset: [0, -38],
+      });
+      
       marker.on('click', () => {
         onSelectPOI(poi);
         map.flyTo([poi.lat, poi.lng], Math.max(map.getZoom(), 13), { duration: 1.2 });
+        marker.openPopup();
       });
 
       layer.addLayer(marker);
@@ -259,7 +330,7 @@ export function MapContainer({
     // Harvest 35 local establishments for the persistent real data store
     const resolvedCity = cityName || (label.includes(',') ? label.split(',').pop()?.trim() : label) || 'Jaipur';
     try {
-      actualDataStore.harvestArea(label.split(',')[0].trim(), resolvedCity, lat, lng, 35);
+      mapExplorerDb.harvestArea(label.split(',')[0].trim(), resolvedCity, lat, lng, 35);
     } catch (e) {
       console.warn('[MapExplorer] Harvesting skipped:', e);
     }
@@ -285,13 +356,20 @@ export function MapContainer({
 
       const searchMarker = L.marker([lat, lng], { icon: pulseIcon }).addTo(searchLayer);
       searchMarker.bindPopup(`
-        <div style="font-family: sans-serif; padding: 4px;">
-          <strong style="font-size: 13px; color: #111;">${label}</strong>
-          <div style="font-size: 11px; color: #666; margin-top: 2px;">
+        <div style="font-family: inherit; padding: 4px; min-width: 180px;">
+          <div style="font-size: 10px; font-weight: bold; color: #c59b27; text-transform: uppercase;">Searched Zone</div>
+          <strong style="font-size: 13px; color: inherit; display: block; margin-top: 2px;">${label}</strong>
+          <div style="font-size: 11px; color: #888; margin-top: 3px;">
             Target Commercial Zone • Lat: ${lat.toFixed(4)}, Lon: ${lng.toFixed(4)}
           </div>
         </div>
-      `).openPopup();
+      `, {
+        className: 'vyapar-map-popup',
+        autoPan: true,
+        autoPanPaddingTopLeft: L.point(40, 140),
+        autoPanPaddingBottomRight: L.point(40, 40),
+        offset: L.point(0, -20),
+      }).openPopup();
     }
   };
 
@@ -460,8 +538,33 @@ export function MapContainer({
         </div>
       </div>
 
-      {/* TOP-RIGHT: Map Provider & Tile Layer Switcher */}
+      {/* TOP-RIGHT: Map Provider & Tile Layer Switcher + Harvest Action */}
       <div className="absolute top-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
+        {/* Quick Harvest 35 Catchment Shops Button */}
+        <button
+          type="button"
+          onClick={handleHarvestClick}
+          disabled={isHarvesting}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-card/95 hover:bg-muted/90 backdrop-blur-md border border-border/90 text-xs font-mono font-bold text-foreground shadow-xl transition-all hover:border-gold-500/50 cursor-pointer select-none"
+          title="Scrape and harvest real local commercial stores into offline database"
+        >
+          {isHarvesting ? (
+            <>
+              <Loader2 size={13} className="animate-spin text-gold-400" />
+              <span>Scanning Catchment…</span>
+            </>
+          ) : harvestSuccess ? (
+            <>
+              <span className="text-emerald-400 font-bold">✓ 35 Stores Harvested</span>
+            </>
+          ) : (
+            <>
+              <span className="text-gold-400">📡</span>
+              <span>Harvest Catchment Stores</span>
+            </>
+          )}
+        </button>
+
         {/* Map Source Tabs: Google Maps vs OpenStreetMap vs Satellite */}
         <div className="flex items-center p-1 rounded-2xl bg-card/95 backdrop-blur-md border border-border/90 shadow-xl text-xs font-mono">
           <div className="px-2 py-1 text-muted-foreground flex items-center gap-1.5 hidden md:flex">

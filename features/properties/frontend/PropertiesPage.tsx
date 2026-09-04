@@ -3,7 +3,7 @@ import { PropertyCard } from './PropertyCard';
 import { PropertyFilters } from './PropertyFilters';
 import { TourModal } from './TourModal';
 import { propertiesService } from './properties.service';
-import type { CommercialProperty } from '@/database';
+import type { CommercialProperty } from '@/types/schema';
 
 export function PropertiesPage() {
   const [properties, setProperties] = useState<CommercialProperty[]>([]);

@@ -1,4 +1,5 @@
-import { db, type CompetitorItem, type MarketKPI } from '@/database';
+import { analyticsDb } from '../backend/analytics.db';
+import type { CompetitorItem, MarketKPI } from '@/types/schema';
 
 export interface FinancialCalculationInput {
   dailyCustomers: number;
@@ -117,11 +118,11 @@ export const analyticsService = {
   },
 
   getCompetitors(city?: string): CompetitorItem[] {
-    return db.getCompetitors(city);
+    return analyticsDb.getCompetitors(city);
   },
 
-  getMarketKPIs(): MarketKPI[] {
-    return db.getMarketKPIs();
+  getMarketKPIs(city?: string): MarketKPI[] {
+    return analyticsDb.getMarketKPIs(city);
   },
 };
 

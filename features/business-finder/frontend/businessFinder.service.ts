@@ -1,9 +1,7 @@
 import {
-  EXTENDED_BUSINESS_OPPORTUNITIES,
+  businessFinderDb,
   type ExtendedBusinessOpportunity,
-} from '@/database/m_business';
-import { FRANCHISES } from '@/database/franchises';
-import { actualDataStore } from '@/database/actualDataStore';
+} from '../backend/businessFinder.db';
 
 export interface BusinessFinderInput {
   budget: number;
@@ -82,8 +80,8 @@ export const businessFinderService = {
       specialtyBonus: { tech: 10, food: 10, fitness: 10, retail: 10, education: 10 },
     };
 
-    // 1. Filter businesses based on skillset
-    let candidateBusinesses = [...EXTENDED_BUSINESS_OPPORTUNITIES];
+    // 1. Filter businesses based on skillset from decentralized database
+    let candidateBusinesses = businessFinderDb.getAllOpportunities();
     if (selectedSkillset !== 'all') {
       candidateBusinesses = candidateBusinesses.filter(
         b => b.category.toLowerCase() === selectedSkillset.toLowerCase()
@@ -100,6 +98,11 @@ export const businessFinderService = {
       // Base city viability index (0 to 10 scale converted to points)
       const baseCityViability = biz.cityViabilityScores[selectedCity] ?? 8.5;
       let score = baseCityViability * 5.5; // up to 55 points
+
+      // High priority bonus for actual verified live data
+      if (biz.isActualData) {
+        score += 15;
+      }
 
       // Recommended city bonus
       if (biz.recommendedCities.includes(selectedCity)) {
@@ -164,6 +167,10 @@ export const businessFinderService = {
     // 3. Re-rank strictly descending by matchScore
     // Tie-breaker: prefer affordable models and lower roiMonths
     scoredBusinesses.sort((a, b) => {
+      // Priority 1: Actual verified live data first
+      if ((b.isActualData ? 1 : 0) !== (a.isActualData ? 1 : 0)) {
+        return (b.isActualData ? 1 : 0) - (a.isActualData ? 1 : 0);
+      }
       if (b.matchScore !== a.matchScore) {
         return b.matchScore - a.matchScore;
       }

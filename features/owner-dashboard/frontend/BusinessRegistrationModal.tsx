@@ -4,7 +4,8 @@ import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Store, Building2, MapPin, User, Mail, Phone, Maximize2, Footprints, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/system/auth/frontend/AuthContext';
-import type { UserBusiness } from '@/database/r_users';
+import type { UserBusiness } from '../backend/ownerDashboard.db';
+import { franchisesDb } from '@/features/franchises/backend/franchises.db';
 
 interface BusinessRegistrationModalProps {
   isOpen: boolean;
@@ -25,6 +26,13 @@ export function BusinessRegistrationModal({ isOpen, onClose, onComplete }: Busin
   const [businessPhone, setBusinessPhone] = useState(user.phone || '9999999999');
   const [landAreaSqft, setLandAreaSqft] = useState<string>('650');
   const [avgDailyFootfall, setAvgDailyFootfall] = useState<string>('520');
+
+  // Offer as Franchise States (Requirement 9)
+  const [offerAsFranchise, setOfferAsFranchise] = useState(false);
+  const [franchiseInvestment, setFranchiseInvestment] = useState('1500000');
+  const [franchiseFee, setFranchiseFee] = useState('200000');
+  const [royaltyPercent, setRoyaltyPercent] = useState('5');
+  const [roiMonths, setRoiMonths] = useState('14');
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -51,6 +59,28 @@ export function BusinessRegistrationModal({ isOpen, onClose, onComplete }: Busin
       };
 
       registerBusiness(biz);
+
+      if (offerAsFranchise) {
+        franchisesDb.addCustomFranchise({
+          id: `user-biz-${Date.now()}`,
+          brand: businessName.trim(),
+          logoColor: '#c59b27',
+          category: businessType.toLowerCase().includes('cafe') || businessType.toLowerCase().includes('bakery') || businessType.toLowerCase().includes('food')
+            ? 'Food & Beverage'
+            : 'Retail',
+          investment: parseInt(franchiseInvestment, 10) || 1500000,
+          franchiseFee: parseInt(franchiseFee, 10) || 200000,
+          royaltyPercent: parseInt(royaltyPercent, 10) || 5,
+          roiMonths: parseInt(roiMonths, 10) || 14,
+          outlets: 1,
+          description: `Commercial franchise opportunity founded by ${ownerName.trim()}. Active store operational in ${location.trim()}.`,
+          preferredLocations: [location.trim(), 'High Street Hubs', 'Major Transit Corridors'],
+          minAreaSqft: landAreaSqft ? parseInt(landAreaSqft, 10) : 350,
+          isOfficial: true,
+          applyUrl: `mailto:${businessEmail.trim()}?subject=VyaparMap Franchise Inquiry for ${encodeURIComponent(businessName.trim())}`,
+        });
+      }
+
       setLoading(false);
       setSuccess(true);
 
@@ -100,7 +130,7 @@ export function BusinessRegistrationModal({ isOpen, onClose, onComplete }: Busin
               >
                 <div className="flex items-center gap-2 font-bold text-xs text-foreground">
                   <Store size={15} className={mode === 'existing' ? 'text-gold-400' : 'text-muted-foreground'} />
-                  <span>5a. Already Own a Store</span>
+                  <span>Already Own a Store</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   Active business with operational walk-ins and physical leased address.
@@ -118,7 +148,7 @@ export function BusinessRegistrationModal({ isOpen, onClose, onComplete }: Busin
               >
                 <div className="flex items-center gap-2 font-bold text-xs text-foreground">
                   <Building2 size={15} className={mode === 'new' ? 'text-gold-400' : 'text-muted-foreground'} />
-                  <span>5b. Open New Business</span>
+                  <span>Open New Business</span>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1">
                   Planned or upcoming outlet seeking viability & expansion telemetry.
@@ -242,6 +272,69 @@ export function BusinessRegistrationModal({ isOpen, onClose, onComplete }: Busin
             ) : (
               <div className="p-3 rounded-xl bg-muted/40 border border-border/60 flex items-center text-[11px] text-muted-foreground">
                 <span>Predictive algorithms will project expected footfall based on your target corridor.</span>
+              </div>
+            )}
+          </div>
+
+          {/* Offer as Franchise Opportunity Toggle (Requirement 9) */}
+          <div className="rounded-xl border border-gold-500/40 bg-gold-500/10 p-3.5 space-y-3">
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={offerAsFranchise}
+                onChange={e => setOfferAsFranchise(e.target.checked)}
+                className="rounded border-gold-500 text-gold-500 focus:ring-gold-500 h-4 w-4"
+              />
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <span>🌟 Offer this business as an available Franchise Opportunity on VyaparMap</span>
+              </span>
+            </label>
+            <p className="text-[11px] text-muted-foreground">
+              Feature your business on the Franchises network for prospective entrepreneurs to explore and apply.
+            </p>
+
+            {offerAsFranchise && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 animate-fade-in text-xs">
+                <div>
+                  <label className="text-[10px] uppercase font-mono text-muted-foreground">Est. Investment (₹)</label>
+                  <Input
+                    type="number"
+                    value={franchiseInvestment}
+                    onChange={e => setFranchiseInvestment(e.target.value)}
+                    placeholder="1500000"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-mono text-muted-foreground">Franchise Fee (₹)</label>
+                  <Input
+                    type="number"
+                    value={franchiseFee}
+                    onChange={e => setFranchiseFee(e.target.value)}
+                    placeholder="200000"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-mono text-muted-foreground">Royalty (%)</label>
+                  <Input
+                    type="number"
+                    value={royaltyPercent}
+                    onChange={e => setRoyaltyPercent(e.target.value)}
+                    placeholder="5"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-mono text-muted-foreground">Payback (Months)</label>
+                  <Input
+                    type="number"
+                    value={roiMonths}
+                    onChange={e => setRoiMonths(e.target.value)}
+                    placeholder="14"
+                    className="mt-1"
+                  />
+                </div>
               </div>
             )}
           </div>
