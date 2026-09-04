@@ -49,17 +49,3 @@ vyaparMap/
    - Rent-to-revenue stress-testing matrix.
 
 ---
-
-## 🚀 Getting Started
-
-```bash
-# Navigate to project
-cd D:\Coding\Codes\Projects\vyaparMap
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
