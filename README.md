@@ -47,6 +47,15 @@ vyaparMap/
    - Store hourly footfall telemetry (Weekday vs Weekend).
    - Local competitor radar (500m walking radius).
    - Rent-to-revenue stress-testing matrix.
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Navigate to project
+cd D:\Coding\Codes\Projects\vyaparMap
+
 # Install dependencies
 npm install
 

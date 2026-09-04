@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { UserSession } from '@/database/schema';
+import type { UserSession } from '@/types/schema';
 import {
   type RegisteredUser,
   type UserBusiness,
@@ -9,7 +9,7 @@ import {
   saveUser,
   DEMO_ABHINAV,
   getStoreDashboardData,
-} from '@/database/r_users';
+} from '../backend/users.db';
 
 interface AuthContextType {
   user: UserSession;
