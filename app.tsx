@@ -14,10 +14,10 @@ import { FranchisesPage } from './features/franchises/frontend/FranchisesPage';
 import { PropertiesPage } from './features/properties/frontend/PropertiesPage';
 import { AnalyticsPage } from './features/analytics/frontend/AnalyticsPage';
 import { OwnerDashboardPage } from './features/owner-dashboard/frontend/OwnerDashboardPage';
+import { LoansPage } from './features/loans/frontend/LoansPage';
 
 // System Pages
 import { LoginPage } from './system/auth/frontend/LoginPage';
-import { SettingsPage } from './system/settings/frontend/SettingsPage';
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -63,6 +63,7 @@ export function App() {
             <Route path="/franchises" element={<FranchisesPage />} />
             <Route path="/properties" element={<PropertiesPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/loans" element={<LoansPage />} />
             <Route
               path="/owner/dashboard"
               element={
@@ -71,7 +72,6 @@ export function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/login" element={<LoginPage />} />
           </Routes>
         </AppLayout>
