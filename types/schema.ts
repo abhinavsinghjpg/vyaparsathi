@@ -210,6 +210,15 @@ export interface DistrictMsmeStats {
   monthlyPerCapitaSpendingUrban: number;
   commercialElectricityRatePerUnit: number;
   priorityLendingInterestDiscount: string;
+  yearlyGrowth?: Array<{ year: string; count: number; growthRatePct: number }>;
+  sectorDistribution?: {
+    retailTradePct: number;
+    servicesPct: number;
+    manufacturingPct: number;
+    agroProcessingPct: number;
+  };
+  districtCategory?: string;
+  estimatedEmployment?: number;
 }
 
 export interface PostalOfficeInfo {

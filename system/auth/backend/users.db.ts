@@ -1,3 +1,5 @@
+import { sqlVault } from '@/system/database/sqlVault';
+
 export interface UserBusiness {
   businessName: string;
   businessType: string;
@@ -253,10 +255,34 @@ export function generateNextUserId(): string {
 export function saveUser(user: RegisteredUser): RegisteredUser {
   const users = getRegisteredUsers();
   const index = users.findIndex(u => u.id === user.id);
-  if (index >= 0) {
+  const isNew = index < 0;
+  if (!isNew) {
     users[index] = user;
   } else {
     users.push(user);
+    try {
+      sqlVault.recordUserRegistration(user);
+    } catch (e) {
+      console.warn('[SQL Vault] User registration record error:', e);
+    }
+  }
+  if (user.business) {
+    try {
+      sqlVault.recordBusinessRegistration({
+        userId: user.id,
+        businessName: user.business.businessName,
+        businessType: user.business.businessType,
+        location: user.business.location,
+        city: user.business.city,
+        ownerName: user.business.ownerName,
+        businessEmail: user.business.businessEmail,
+        businessPhone: user.business.businessPhone,
+        landAreaSqft: user.business.landAreaSqft,
+        registeredMode: user.business.registeredMode,
+      } as any);
+    } catch (e) {
+      console.warn('[SQL Vault] Business registration record error:', e);
+    }
   }
   saveRegisteredUsers(users);
   return user;
